@@ -66,7 +66,7 @@
     
     // make image stretchable from center point
     CGPoint center = CGPointMake(bubble.size.width / 2.0f, bubble.size.height / 2.0f);
-    UIEdgeInsets capInsets = UIEdgeInsetsMake(center.y, center.x, center.y, center.x);
+    UIEdgeInsets capInsets = UIEdgeInsetsMake(center.y + 10, center.x, center.y - 10, center.x);
     
     normalBubble = [JSQMessagesBubbleImageFactory jsq_stretchableImageFromImage:normalBubble withCapInsets:capInsets];
     highlightedBubble = [JSQMessagesBubbleImageFactory jsq_stretchableImageFromImage:highlightedBubble withCapInsets:capInsets];
