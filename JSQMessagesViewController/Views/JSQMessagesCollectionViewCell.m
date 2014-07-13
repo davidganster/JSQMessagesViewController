@@ -57,9 +57,12 @@
 @property (weak, nonatomic, readwrite) UILongPressGestureRecognizer *longPressGestureRecognizer;
 @property (weak, nonatomic, readwrite) UITapGestureRecognizer *tapGestureRecognizer;
 @property (weak, nonatomic, readwrite) UITapGestureRecognizer *avatarTapGestureRecognizer;
+@property (weak, nonatomic, readwrite) UITapGestureRecognizer *tapMediaGestureRecognizer;
 
 - (void)jsq_handleLongPressGesture:(UILongPressGestureRecognizer *)longPress;
 - (void)jsq_handleAvatarTapGesture:(UITapGestureRecognizer *)tap;
+- (void)jsq_handleTapGesture:(UITapGestureRecognizer *)tap;
+- (void)jsq_handleTapMediaGesture:(UITapGestureRecognizer *)tap;
 
 - (void)jsq_didReceiveMenuWillHideNotification:(NSNotification *)notification;
 - (void)jsq_didReceiveMenuWillShowNotification:(NSNotification *)notification;
@@ -136,11 +139,17 @@
 	tapRecognizer.delegate = self;
     [self addGestureRecognizer:tapRecognizer];
     self.tapGestureRecognizer = tapRecognizer;
-	
+    
+    UITapGestureRecognizer *tapMedia = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(jsq_handleTapMediaGesture:)];
+    self.mediaImageView.userInteractionEnabled = YES;
+    [self.mediaImageView addGestureRecognizer:tapMedia];
+    self.tapMediaGestureRecognizer = tapMedia;
+
     UITapGestureRecognizer* avatarTapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(jsq_handleAvatarTapGesture:)];
 	avatarTapRecognizer.delegate = self;
     [self.avatarContainerView addGestureRecognizer:avatarTapRecognizer];
     self.avatarTapGestureRecognizer = avatarTapRecognizer;
+
 }
 
 - (void)dealloc
@@ -157,11 +166,14 @@
     [_longPressGestureRecognizer removeTarget:nil action:NULL];
     _longPressGestureRecognizer = nil;
     
-	[_tapGestureRecognizer removeTarget:nil action:NULL];
-	_tapGestureRecognizer = nil;
-	
+    [_tapGestureRecognizer removeTarget:nil action:NULL];
+    _tapGestureRecognizer = nil;
+    
     [_avatarTapGestureRecognizer removeTarget:nil action:NULL];
     _avatarTapGestureRecognizer = nil;
+
+    [_tapMediaGestureRecognizer removeTarget:nil action:NULL];
+    _tapMediaGestureRecognizer = nil;
 }
 
 #pragma mark - Collection view cell
@@ -245,7 +257,15 @@
                                               CGRectGetHeight(self.messageBubbleContainerView.bounds));
     
     [messageBubbleImageView setTranslatesAutoresizingMaskIntoConstraints:NO];
-    [self.messageBubbleContainerView insertSubview:messageBubbleImageView belowSubview:self.textView];
+    
+    if (self.textView)
+    {
+        [self.messageBubbleContainerView insertSubview:messageBubbleImageView belowSubview:self.textView];
+    }
+    else if (self.mediaImageView)
+    {
+        [self.messageBubbleContainerView insertSubview:messageBubbleImageView belowSubview:self.mediaImageView];
+    }
     [self.messageBubbleContainerView jsq_pinAllEdgesOfSubview:messageBubbleImageView];
     [self setNeedsUpdateConstraints];
     
@@ -393,6 +413,11 @@
 - (void)jsq_handleAvatarTapGesture:(UITapGestureRecognizer *)tap
 {
     [self.delegate messagesCollectionViewCellDidTapAvatar:self];
+}
+
+- (void) jsq_handleTapMediaGesture:(UITapGestureRecognizer *)tap
+{
+    [self.delegate messagesCollectionViewCellDidTapMedia:self];
 }
 
 #pragma mark - Notifications

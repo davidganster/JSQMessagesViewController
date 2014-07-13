@@ -27,6 +27,8 @@
 
 #import "JSQMessagesCollectionViewCellIncoming.h"
 #import "JSQMessagesCollectionViewCellOutgoing.h"
+#import "JSQMessagesCollectionViewCellIncomingMedia.h"
+#import "JSQMessagesCollectionViewCellOutgoingMedia.h"
 
 #import "JSQMessagesTypingIndicatorFooterView.h"
 #import "JSQMessagesLoadEarlierHeaderView.h"
@@ -39,7 +41,6 @@
 
 #import "NSString+JSQMessages.h"
 #import "UIColor+JSQMessages.h"
-
 
 static void * kJSQMessagesKeyValueObservingContext = &kJSQMessagesKeyValueObservingContext;
 
@@ -64,7 +65,10 @@ static void * kJSQMessagesKeyValueObservingContext = &kJSQMessagesKeyValueObserv
 
 @property (strong, nonatomic) JSQMessagesKeyboardController *keyboardController;
 
+@property (nonatomic) UIViewController *mediaViewController;
+
 @property (assign, nonatomic) CGFloat statusBarChangeInHeight;
+
 
 - (void)jsq_configureMessagesViewController;
 
@@ -136,6 +140,9 @@ static void * kJSQMessagesKeyValueObservingContext = &kJSQMessagesKeyValueObserv
     self.outgoingCellIdentifier = [JSQMessagesCollectionViewCellOutgoing cellReuseIdentifier];
     self.incomingCellIdentifier = [JSQMessagesCollectionViewCellIncoming cellReuseIdentifier];
     
+    self.outgoingMediaCellIdentifier = [JSQMessagesCollectionViewCellOutgoingMedia cellReuseIdentifier];
+    self.incomingMediaCellIdentifier = [JSQMessagesCollectionViewCellIncomingMedia cellReuseIdentifier];;
+
     self.typingIndicatorColor = [UIColor jsq_messageBubbleLightGrayColor];
     self.showTypingIndicator = NO;
     
@@ -442,15 +449,29 @@ static void * kJSQMessagesKeyValueObservingContext = &kJSQMessagesKeyValueObserv
     NSParameterAssert(messageSender != nil);
     
     BOOL isOutgoingMessage = [messageSender isEqualToString:self.sender];
+    NSString *cellIdentifier;
     
-    NSString *cellIdentifier = isOutgoingMessage ? self.outgoingCellIdentifier : self.incomingCellIdentifier;
+    switch (messageData.kind) {
+        case JSQMessageTextKind:
+        {
+            cellIdentifier = isOutgoingMessage ? self.outgoingCellIdentifier : self.incomingCellIdentifier;
+        }
+            break;
+        case JSQMessageLocalMediaKind:
+        case JSQMessageRemoteMediaKind:
+        {
+            cellIdentifier = isOutgoingMessage ? self.outgoingMediaCellIdentifier : self.incomingMediaCellIdentifier;
+        }
+            break;
+    }
+    
+    /**
+     *  Common parameters
+     */
+    
     JSQMessagesCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:cellIdentifier forIndexPath:indexPath];
     cell.delegate = self;
-    
-    NSString *messageText = [messageData text];
-    NSParameterAssert(messageText != nil);
-    
-    cell.textView.text = messageText;
+
     cell.messageBubbleImageView = [collectionView.dataSource collectionView:collectionView bubbleImageViewForItemAtIndexPath:indexPath];
     cell.avatarImageView = [collectionView.dataSource collectionView:collectionView avatarImageViewForItemAtIndexPath:indexPath];
     cell.cellTopLabel.attributedText = [collectionView.dataSource collectionView:collectionView attributedTextForCellTopLabelAtIndexPath:indexPath];
@@ -471,18 +492,51 @@ static void * kJSQMessagesKeyValueObservingContext = &kJSQMessagesKeyValueObserv
     }
     
     cell.backgroundColor = [UIColor clearColor];
-    
-    CGFloat bubbleTopLabelInset = 60.0f;
-    
-    if (isOutgoingMessage) {
-        cell.messageBubbleTopLabel.textInsets = UIEdgeInsetsMake(0.0f, 0.0f, 0.0f, bubbleTopLabelInset);
+
+    if (messageData.kind == JSQMessageTextKind)
+    {
+        NSString *messageText = [messageData text];
+        NSParameterAssert(messageText != nil);
+        
+        cell.textView.text = messageText;
+        
+        CGFloat bubbleTopLabelInset = 60.0f;
+        
+        if (isOutgoingMessage) {
+            cell.messageBubbleTopLabel.textInsets = UIEdgeInsetsMake(0.0f, 0.0f, 0.0f, bubbleTopLabelInset);
+        }
+        else {
+            cell.messageBubbleTopLabel.textInsets = UIEdgeInsetsMake(0.0f, bubbleTopLabelInset, 0.0f, 0.0f);
+        }
+        
+        cell.textView.dataDetectorTypes = UIDataDetectorTypeAll;
+        
     }
-    else {
-        cell.messageBubbleTopLabel.textInsets = UIEdgeInsetsMake(0.0f, bubbleTopLabelInset, 0.0f, 0.0f);
+    else
+    {
+        JSQMessagesMediaHandler *mediaHandler;
+        
+        if (isOutgoingMessage)
+        {
+            JSQMessagesCollectionViewCellOutgoingMedia *mediaCell = (JSQMessagesCollectionViewCellOutgoingMedia *) cell;
+            mediaHandler = mediaCell.mediaHandler;
+        }
+        else
+        {
+            JSQMessagesCollectionViewCellIncomingMedia *mediaCell = (JSQMessagesCollectionViewCellIncomingMedia *) cell;
+            mediaHandler = mediaCell.mediaHandler;
+        }
+        
+        if (messageData.kind == JSQMessageLocalMediaKind)
+        {
+            [mediaHandler setMediaFromImage:messageData.image];
+        }
+        else if (messageData.kind == JSQMessageRemoteMediaKind)
+        {
+            [mediaHandler setMediaFromURL:messageData.url];
+        }
     }
-    
-    cell.textView.dataDetectorTypes = UIDataDetectorTypeAll;
-    
+
     return cell;
 }
 
@@ -569,6 +623,10 @@ static void * kJSQMessagesKeyValueObservingContext = &kJSQMessagesKeyValueObserv
 {
 }
 
+- (void)collectionView:(JSQMessagesCollectionView *)collectionView
+  didTapMediaImageView:(UIImageView *)mediaImageView
+           atIndexPath:(NSIndexPath *)indexPath { }
+
 #pragma mark - Messages collection view cell delegate
 
 - (BOOL)shouldCellRecognizeTaps:(JSQMessagesCollectionViewCell *)cell
@@ -596,6 +654,14 @@ static void * kJSQMessagesKeyValueObservingContext = &kJSQMessagesKeyValueObserv
 	id<JSQMessageData> messageData = [self.collectionView.dataSource collectionView:self.collectionView messageDataForItemAtIndexPath:indexPath];
 	
 	[self.collectionView.delegate collectionView:self.collectionView didTapMessage:messageData atIndexPath:indexPath];
+}
+
+- (void)messagesCollectionViewCellDidTapMedia:(JSQMessagesCollectionViewCell *)cell;
+{
+    [self.collectionView.delegate collectionView:self.collectionView
+                            didTapMediaImageView:cell.mediaImageView
+                                     atIndexPath:[self.collectionView indexPathForCell:cell]];
+
 }
 
 #pragma mark - Input toolbar delegate

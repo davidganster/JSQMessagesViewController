@@ -220,6 +220,17 @@
            atIndexPath:(NSIndexPath *)indexPath;
 
 /**
+ *  Notifies the delegate that the media image view at the specified indexPath did receive a tap event.
+ *
+ *  @param collectionView   The collection view object that is notifying you of the tap event.
+ *  @param mediaImageView   The media image view that was tapped.
+ *  @param indexPath        The index path of the item for which the avatar was tapped.
+ */
+- (void)collectionView:(JSQMessagesCollectionView *)collectionView
+  didTapMediaImageView:(UIImageView *)mediaImageView
+           atIndexPath:(NSIndexPath *)indexPath;
+
+/**
  *  Notifies the delegate that the collection view's header did receive a tap event.
  *
  *  @param collectionView The collection view object that is notifying you of the tap event.

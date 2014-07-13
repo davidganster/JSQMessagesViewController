@@ -46,6 +46,13 @@
  */
 - (void)messagesCollectionViewCellDidTapAvatar:(JSQMessagesCollectionViewCell *)cell;
 
+/**
+ *  Tells the delegate that the mediaImageView of a cell has been tapped.
+ *
+ *  @param cell The cell that received the tap.
+ */
+- (void)messagesCollectionViewCellDidTapMedia:(JSQMessagesCollectionViewCell *)cell;
+
 @end
 
 
@@ -85,6 +92,13 @@
  *  Returns the text view of the cell. This text view contains the message body text.
  */
 @property (weak, nonatomic, readonly) UITextView *textView;
+
+
+/**
+ *  Returns the image view for displaying media in the cell.
+ */
+
+@property (weak, nonatomic) IBOutlet UIImageView *mediaImageView;
 
 /**
  *  The bubble image view of the cell that is responsible for displaying bubble images.
