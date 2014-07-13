@@ -133,7 +133,6 @@ static NSString * const kJSQDemoAvatarNameWoz = @"Steve Wozniak";
     /**
      *  Create bubble images.
      *
-     *  Be sure to create your avatars one time and reuse them for good performance.
      *
      */
     self.outgoingBubbleImageView = [JSQMessagesBubbleImageFactory
@@ -473,7 +472,7 @@ static NSString * const kJSQDemoAvatarNameWoz = @"Steve Wozniak";
 - (CGFloat)collectionView:(JSQMessagesCollectionView *)collectionView
                    layout:(JSQMessagesCollectionViewFlowLayout *)collectionViewLayout heightForCellBottomLabelAtIndexPath:(NSIndexPath *)indexPath
 {
-    return 0.0f;
+    return 10.0f;
 }
 
 - (void)collectionView:(JSQMessagesCollectionView *)collectionView
