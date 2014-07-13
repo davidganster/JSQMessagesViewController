@@ -65,6 +65,11 @@
  */
 @interface JSQMessagesCollectionViewCell : UICollectionViewCell
 
+
+// HACKHACKHACK
+@property (unsafe_unretained, nonatomic) IBOutlet NSLayoutConstraint *avatarContainerViewBottomSpacing;
+
+
 /**
  *  The object that acts as the delegate for the cell.
  */
