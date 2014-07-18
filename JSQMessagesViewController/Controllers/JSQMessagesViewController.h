@@ -21,6 +21,7 @@
 #import "JSQMessagesCollectionView.h"
 #import "JSQMessagesCollectionViewFlowLayout.h"
 
+@class JSQMessagesKeyboardController;
 @class JSQMessagesInputToolbar;
 
 /**
@@ -40,6 +41,9 @@
  *  This view controller is the collection view's data source and delegate.
  */
 @property (weak, nonatomic, readonly) JSQMessagesCollectionView *collectionView;
+
+
+@property (strong, nonatomic) JSQMessagesKeyboardController *keyboardController;
 
 /**
  *  Returns the input toolbar view object managed by this view controller. 

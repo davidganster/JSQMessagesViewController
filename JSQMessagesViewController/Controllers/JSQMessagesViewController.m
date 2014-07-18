@@ -63,8 +63,6 @@ static void * kJSQMessagesKeyValueObservingContext = &kJSQMessagesKeyValueObserv
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *toolbarHeightConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *toolbarBottomLayoutGuide;
 
-@property (strong, nonatomic) JSQMessagesKeyboardController *keyboardController;
-
 @property (nonatomic) UIViewController *mediaViewController;
 
 @property (assign, nonatomic) CGFloat statusBarChangeInHeight;
