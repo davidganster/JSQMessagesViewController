@@ -147,6 +147,8 @@ static NSString * const kJSQDemoAvatarNameWoz = @"Steve Wozniak";
                                                                               style:UIBarButtonItemStyleBordered
                                                                              target:self
                                                                              action:@selector(receiveMessagePressed:)];
+    
+    self.inputToolbar.contentView.rightBarButtonItemWidth = 70;
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -373,7 +375,7 @@ static NSString * const kJSQDemoAvatarNameWoz = @"Steve Wozniak";
 
 - (NSAttributedString *)collectionView:(JSQMessagesCollectionView *)collectionView attributedTextForCellBottomLabelAtIndexPath:(NSIndexPath *)indexPath
 {
-    return nil;
+    return [[NSAttributedString alloc] initWithString:@"Read" attributes:@{NSFontAttributeName : [UIFont fontWithName:@"HelveticaNeue" size:13]}];
 }
 
 #pragma mark - UICollectionView DataSource
@@ -472,7 +474,7 @@ static NSString * const kJSQDemoAvatarNameWoz = @"Steve Wozniak";
 - (CGFloat)collectionView:(JSQMessagesCollectionView *)collectionView
                    layout:(JSQMessagesCollectionViewFlowLayout *)collectionViewLayout heightForCellBottomLabelAtIndexPath:(NSIndexPath *)indexPath
 {
-    return 10.0f;
+    return 20.0f;
 }
 
 - (void)collectionView:(JSQMessagesCollectionView *)collectionView
