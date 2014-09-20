@@ -1,9 +1,9 @@
 PODS:
   - JSQSystemSoundPlayer (1.5.2)
-  - OCMock (3.0.2)
-  - SDWebImage (3.6):
+  - OCMock (3.1.1)
+  - SDWebImage (3.7.1):
     - SDWebImage/Core
-  - SDWebImage/Core (3.6)
+  - SDWebImage/Core (3.7.1)
 
 DEPENDENCIES:
   - JSQSystemSoundPlayer
@@ -12,7 +12,7 @@ DEPENDENCIES:
 
 SPEC CHECKSUMS:
   JSQSystemSoundPlayer: c24914bc96ff5365b5d28b59d7ecffd60d1c5587
-  OCMock: b9836ab89d8d5e66cbe6333f93857037c310ee62
-  SDWebImage: c6989652c1cdf27cbdf3f56957e2030f825af5bc
+  OCMock: f6cb8c162ab9d5620dddf411282c7b2c0ee78854
+  SDWebImage: 116e88633b5b416ea0ca4b334a4ac59cf72dd38d
 
 COCOAPODS: 0.33.1

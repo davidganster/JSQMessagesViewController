@@ -225,6 +225,13 @@
 
 #pragma mark - Setters
 
+// Workaround for a strange iOS 8 bug that causes messages to
+// render weirdly on some devices:
+- (void)setBounds:(CGRect)bounds {
+    [super setBounds:bounds];
+    self.contentView.frame = bounds;
+}
+
 - (void)setBackgroundColor:(UIColor *)backgroundColor
 {
     [super setBackgroundColor:backgroundColor];
